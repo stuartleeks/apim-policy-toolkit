@@ -70,15 +70,24 @@ public class CSharpPolicyCompiler
     {
         var choose = new XElement("choose");
         sectionElement.Add(choose);
-        
-        var whenSection = CompileSection("when", syntax.Statement as BlockSyntax);
-        choose.Add(whenSection);
 
-        whenSection.Add(new XAttribute("condition", FindCode(syntax.Condition as InvocationExpressionSyntax)));
-        
-        if(syntax.Else != null)
+        IfStatementSyntax? nextIf = syntax;
+        IfStatementSyntax currentIf;
+        do
         {
-            var otherwiseSection = CompileSection("otherwise", syntax.Else.Statement as BlockSyntax);
+            currentIf = nextIf;
+            var whenSection = CompileSection("when", currentIf.Statement as BlockSyntax);
+            choose.Add(whenSection);
+
+            whenSection.Add(new XAttribute("condition", FindCode(currentIf.Condition as InvocationExpressionSyntax)));
+
+            nextIf = currentIf.Else?.Statement as IfStatementSyntax;
+        } while (nextIf != null);
+        
+        
+        if(currentIf.Else != null)
+        {
+            var otherwiseSection = CompileSection("otherwise", currentIf.Else.Statement as BlockSyntax);
             choose.Add(otherwiseSection);
         }
     }
@@ -146,6 +155,7 @@ public class CSharpPolicyCompiler
         var headerValue = ProcessParameter(invocation.ArgumentList.Arguments[1].Expression);
         section.Add(new SetHeaderPolicyBuilder()
             .Name(headerName)
+            .ExistsAction(SetHeaderPolicyBuilder.ExistsActionType.Override)
             .Value(headerValue)
             .Build());
     }
