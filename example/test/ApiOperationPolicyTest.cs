@@ -31,6 +31,11 @@ public class ApiOperationPolicyTest
                            "name": "John Doe"
                        }
                        """;
-        Assert.IsTrue(JObject.DeepEquals(JObject.Parse(newBody), JObject.Parse(expected)));
+        Assert.IsTrue(
+            JObject.DeepEquals(
+                JObject.Parse(newBody),
+                JObject.Parse(expected)
+            )
+        );
     }
 }

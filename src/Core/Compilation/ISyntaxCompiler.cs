@@ -7,7 +7,7 @@ namespace Mielek.Azure.ApiManagement.PolicyToolkit.Compilation;
 
 public interface ISyntaxCompiler
 {
-    SyntaxKind IsCompiling { get; }
+    SyntaxKind Syntax { get; }
 
     void Compile(ICompilationContext context, SyntaxNode node);
 }
